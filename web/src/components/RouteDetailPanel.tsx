@@ -12,9 +12,10 @@ interface RouteDetailPanelProps {
 	isFavorite: boolean;
 	onToggleFavorite: (id: string) => void;
 	onClose: () => void;
+	healthEnabled?: boolean;
 }
 
-export function RouteDetailPanel({ route, isFavorite, onToggleFavorite, onClose }: RouteDetailPanelProps) {
+export function RouteDetailPanel({ route, isFavorite, onToggleFavorite, onClose, healthEnabled = true }: RouteDetailPanelProps) {
 	const [copied, setCopied] = useState(false);
 
 	useEffect(() => {
@@ -101,27 +102,31 @@ export function RouteDetailPanel({ route, isFavorite, onToggleFavorite, onClose 
 					<Section title="Details">
 						<MetaRow label="Namespace" value={route.namespace} />
 						<MetaRow label="Source" value={route.source} />
+						{route.source === "HTTPRoute" && route.gatewayRef && <MetaRow label="Gateway" value={route.gatewayRef} wrap />}
+						{route.source === "Ingress" && route.ingressClass && <MetaRow label="Class" value={route.ingressClass} />}
 						{route.serviceName && <MetaRow label="Service" value={`${route.serviceName}${route.servicePort ? `:${route.servicePort}` : ""}`} />}
-						<MetaRow label="Hosts" value={route.hosts?.join(", ") || "—"} />
-						<MetaRow label="Paths" value={route.paths?.join(", ") || "/"} />
+						<MetaRow label="Hosts" value={route.hosts?.join(", ") || "—"} wrap />
+						<ChipsRow label="Paths" values={route.paths?.length ? route.paths : ["/"]} />
 						<MetaRow label="TLS" value={route.tls ? "Yes" : "No"} />
 						<MetaRow label="Created" value={formatDate(route.createdAt)} />
 						<MetaRow label="Updated" value={formatDate(route.updatedAt)} />
 					</Section>
 
 					{/* Health */}
-					<Section title="Health">
-						<div className="flex items-center gap-3 mb-3">
-							<HealthDot health={route.health} checkedAt={route.healthCheckedAt} size="md" />
-							<span className="text-sm text-tx1 font-medium capitalize">{route.health}</span>
-							{uptimePercent != null && <span className="text-xs font-mono text-tx3">{uptimePercent}% uptime</span>}
-							{route.healthCheckedAt && <span className="text-xs text-tx3 ml-auto">{timeAgo(route.healthCheckedAt)}</span>}
-						</div>
-						{route.healthHistory && route.healthHistory.length > 1 && <Sparkline history={route.healthHistory} width={320} height={16} />}
-					</Section>
+					{healthEnabled && (
+						<Section title="Health">
+							<div className="flex items-center gap-3 mb-3">
+								<HealthDot health={route.health} checkedAt={route.healthCheckedAt} size="md" />
+								<span className="text-sm text-tx1 font-medium capitalize">{route.health}</span>
+								{uptimePercent != null && <span className="text-xs font-mono text-tx3">{uptimePercent}% uptime</span>}
+								{route.healthCheckedAt && <span className="text-xs text-tx3 ml-auto">{timeAgo(route.healthCheckedAt)}</span>}
+							</div>
+							{route.healthHistory && route.healthHistory.length > 1 && <Sparkline history={route.healthHistory} width={320} height={16} />}
+						</Section>
+					)}
 
 					{/* Response time */}
-					{route.responseTimeMs != null && route.responseTimeMs > 0 && (
+					{healthEnabled && route.responseTimeMs != null && route.responseTimeMs > 0 && (
 						<Section title="Response Time">
 							<div className="flex items-center gap-3 mb-3">
 								<ResponseTimeBadgeLg ms={route.responseTimeMs} />
@@ -164,11 +169,26 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 	);
 }
 
-function MetaRow({ label, value }: { label: string; value: string }) {
+function MetaRow({ label, value, wrap = false }: { label: string; value: string; wrap?: boolean }) {
 	return (
-		<div className="flex items-baseline py-1.5 gap-3">
+		<div className={`flex py-1.5 gap-3 ${wrap ? "items-start" : "items-baseline"}`}>
 			<span className="text-xs text-tx3 w-20 flex-shrink-0">{label}</span>
-			<span className="text-sm text-tx1 font-mono truncate">{value}</span>
+			<span className={`text-sm text-tx1 font-mono min-w-0 ${wrap ? "break-all" : "truncate"}`}>{value}</span>
+		</div>
+	);
+}
+
+function ChipsRow({ label, values }: { label: string; values: string[] }) {
+	return (
+		<div className="flex items-start py-1.5 gap-3">
+			<span className="text-xs text-tx3 w-20 flex-shrink-0 mt-0.5">{label}</span>
+			<div className="flex flex-wrap gap-1.5 min-w-0">
+				{values.map((v) => (
+					<span key={v} className="text-[11px] font-mono px-2 py-0.5 rounded bg-elevated text-tx2 border border-line break-all">
+						{v}
+					</span>
+				))}
+			</div>
 		</div>
 	);
 }

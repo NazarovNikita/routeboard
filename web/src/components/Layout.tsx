@@ -64,7 +64,7 @@ export function Layout({
 					<div className="flex items-center justify-between h-16 gap-4">
 						{/* Left: Logo + status */}
 						<div className="flex items-center gap-3 flex-shrink-0">
-							<h1 className="font-display font-bold text-xl text-tx1 tracking-tight">{title}</h1>
+							<h1 className="font-display font-bold text-xl leading-normal text-tx1 tracking-tight">{title}</h1>
 							<div className="flex items-center gap-1.5">
 								<div
 									className={`w-1.5 h-1.5 rounded-full ${connected ? "bg-success animate-pulse-dot" : "bg-tx3"}`}

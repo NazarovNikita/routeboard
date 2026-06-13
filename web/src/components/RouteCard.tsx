@@ -1,4 +1,4 @@
-import { ArrowUpRight, Check, Copy, Link, Lock, Star } from "lucide-react";
+import { ArrowUpRight, Check, Copy, Layers, Link, Lock, Network, Star } from "lucide-react";
 import React, { useState } from "react";
 import type { Route } from "../types";
 import { HealthDot } from "./HealthDot";
@@ -27,6 +27,12 @@ export function RouteCard({ route, index, view, isFavorite, onToggleFavorite, on
 	}, [isFocused]);
 
 	const truncatedUrl = route.url ? route.url.replace(/^https?:\/\//, "").replace(/\/$/, "") : "";
+
+	// Under-URL ref line: Gateway (HTTPRoute) or IngressClass (Ingress).
+	const isHTTPRoute = route.source === "HTTPRoute";
+	const refValue = isHTTPRoute ? route.gatewayRef : route.ingressClass;
+	const refLabel = isHTTPRoute ? "Gateway" : "Ingress class";
+	const RefIcon = isHTTPRoute ? Network : Layers;
 
 	const handleCopy = (e: React.MouseEvent) => {
 		e.preventDefault();
@@ -131,25 +137,37 @@ export function RouteCard({ route, index, view, isFavorite, onToggleFavorite, on
 						<ServiceIcon serviceName={route.serviceName} resourceName={route.name} size={22} />
 					</div>
 					<div className="flex-1 min-w-0">
-						<div className="flex items-center gap-2">
-							<h3 className="font-display font-semibold text-tx1 truncate text-[15px] leading-tight">{route.title}</h3>
-							{route.tls && <Lock className="w-3.5 h-3.5 text-success flex-shrink-0" />}
-							{healthEnabled && <HealthDot health={route.health} checkedAt={route.healthCheckedAt} size="md" />}
-							{healthEnabled && <ResponseTimeBadge ms={route.responseTimeMs} />}
+						<div className="flex items-start gap-2">
+							<h3 className="font-display font-semibold text-tx1 line-clamp-2 text-[15px] leading-snug flex-1 min-w-0" title={route.title}>
+								{route.title}
+							</h3>
+							<div className="flex items-center gap-2 mt-[3px] flex-shrink-0">
+								{route.tls && <Lock className="w-3.5 h-3.5 text-success" />}
+								{healthEnabled && <HealthDot health={route.health} checkedAt={route.healthCheckedAt} size="md" />}
+								{healthEnabled && <ResponseTimeBadge ms={route.responseTimeMs} />}
+							</div>
 						</div>
 						{route.description && <p className="text-xs text-tx2 mt-1 line-clamp-2 leading-relaxed">{route.description}</p>}
 					</div>
 				</div>
 
-				{/* URL + sparkline */}
-				<div className="flex items-center gap-2 mb-4 mt-auto">
-					{truncatedUrl && (
-						<div className="flex items-center gap-1.5 flex-1 min-w-0">
-							<Link className="w-3 h-3 text-tx3 flex-shrink-0" />
-							<span className="font-mono text-xs text-tx3 truncate group-hover:text-accent transition-colors">{truncatedUrl}</span>
+				{/* URL + ref + sparkline */}
+				<div className="mt-auto mb-4 space-y-1.5">
+					<div className="flex items-center gap-2">
+						{truncatedUrl && (
+							<div className="flex items-center gap-1.5 flex-1 min-w-0">
+								<Link className="w-3 h-3 text-tx3 flex-shrink-0" />
+								<span className="font-mono text-xs text-tx3 truncate group-hover:text-accent transition-colors">{truncatedUrl}</span>
+							</div>
+						)}
+						{healthEnabled && route.healthHistory && route.healthHistory.length > 1 && <Sparkline history={route.healthHistory} />}
+					</div>
+					{refValue && (
+						<div className="flex items-center gap-1.5 min-w-0" title={refLabel}>
+							<RefIcon className="w-3 h-3 text-tx3 flex-shrink-0" />
+							<span className="font-mono text-[11px] text-tx3 truncate">{refValue}</span>
 						</div>
 					)}
-					{healthEnabled && route.healthHistory && route.healthHistory.length > 1 && <Sparkline history={route.healthHistory} />}
 				</div>
 
 				{/* Badges + actions */}

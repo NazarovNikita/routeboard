@@ -9,6 +9,8 @@ export interface Route {
 	tls: boolean;
 	serviceName?: string;
 	servicePort?: string;
+	gatewayRef?: string;
+	ingressClass?: string;
 	title: string;
 	description: string;
 	icon: string;

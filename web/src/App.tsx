@@ -110,6 +110,7 @@ function App() {
 					isFavorite={isFavorite(selectedRoute.id)}
 					onToggleFavorite={toggle}
 					onClose={() => setSelectedRouteId(null)}
+					healthEnabled={config.healthEnabled}
 				/>
 			)}
 			{commandPaletteOpen && (
