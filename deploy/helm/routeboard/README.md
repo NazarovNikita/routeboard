@@ -92,15 +92,10 @@ Kubernetes: `>=1.21.0-0`
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | affinity | object | `{}` | Affinity rules for pod scheduling. |
-| config.labelSelector | string | `""` | Label selector to filter discovered routes (empty = all). |
-| config.logLevel | string | `"info"` | Log level: debug, info, warn, or error. |
-| config.namespaceAllowlist | string | `""` | Comma-separated namespaces to restrict discovery to (empty = all). |
-| config.namespaceDenylist | string | `"kube-system,kube-public,kube-node-lease"` | Comma-separated namespaces to exclude from discovery. |
 | config.port | int | `8080` | HTTP server port (container port). |
-| config.resyncInterval | string | `"30m"` | Informer resync interval. |
-| config.title | string | `"RouteBoard"` | Dashboard title. |
 | config.watchHTTPRoute | bool | `true` | Watch HTTPRoute resources. Also gates the httproutes RBAC rule. |
 | config.watchIngress | bool | `true` | Watch Ingress resources. Also gates the ingresses RBAC rule. |
+| extraEnv | list | `[]` | Extra environment variables for the RouteBoard container. Use this for any `ROUTEBOARD_*` setting not covered by `config` above — including (but not limited to): ROUTEBOARD_TITLE, ROUTEBOARD_LOG_LEVEL, ROUTEBOARD_RESYNC_INTERVAL, ROUTEBOARD_NAMESPACE_DENYLIST, ROUTEBOARD_NAMESPACE_ALLOWLIST, ROUTEBOARD_LABEL_SELECTOR, ROUTEBOARD_HEALTH_ENABLED, ROUTEBOARD_HEALTH_INTERVAL, ROUTEBOARD_HEALTH_TIMEOUT. Do not repeat ROUTEBOARD_PORT / ROUTEBOARD_WATCH_INGRESS / ROUTEBOARD_WATCH_HTTPROUTE — those come from `config`. |
 | extraManifests | list | `[]` | Extra raw manifests to deploy alongside the chart. Each item may be a map or a string and is rendered through `tpl`, so it can reference values and the release (e.g. `{{ include "routeboard.fullname" . }}`). Useful for Gateway API traffic policies, NetworkPolicies, or any resource the chart doesn't template natively. |
 | fullnameOverride | string | `""` | Override the fully-qualified release name used for resource names. |
 | gatewayAPI.enabled | bool | `false` | Expose RouteBoard's own UI through a Gateway API HTTPRoute (parallel to ingress). This only controls the chart's own HTTPRoute — discovery of other HTTPRoutes is `config.watchHTTPRoute`. |

@@ -19,12 +19,11 @@ tests:
           path: spec.template.spec.containers[0].image
           value: ghcr.io/dhia-gharsallaoui/routeboard:edge
 
-  - it: maps config values to ROUTEBOARD_* env vars
+  - it: maps structural config to ROUTEBOARD_* env vars
     set:
       config:
         watchIngress: false
         watchHTTPRoute: true
-        title: My Board
     asserts:
       - contains:
           path: spec.template.spec.containers[0].env
@@ -34,36 +33,40 @@ tests:
       - contains:
           path: spec.template.spec.containers[0].env
           content:
+            name: ROUTEBOARD_WATCH_HTTPROUTE
+            value: "true"
+
+  - it: does not render passthrough env vars unless set via extraEnv
+    asserts:
+      - notContains:
+          path: spec.template.spec.containers[0].env
+          any: true
+          content:
             name: ROUTEBOARD_TITLE
-            value: "My Board"
-
-  - it: omits optional env vars when their values are empty
-    asserts:
       - notContains:
           path: spec.template.spec.containers[0].env
+          any: true
           content:
-            name: ROUTEBOARD_NAMESPACE_ALLOWLIST
-      - notContains:
-          path: spec.template.spec.containers[0].env
-          content:
-            name: ROUTEBOARD_LABEL_SELECTOR
+            name: ROUTEBOARD_HEALTH_ENABLED
 
-  - it: renders optional env vars when set
+  - it: renders extraEnv entries into the container env
     set:
-      config:
-        namespaceAllowlist: team-a,team-b
-        labelSelector: app=web
+      extraEnv:
+        - name: ROUTEBOARD_HEALTH_ENABLED
+          value: "false"
+        - name: ROUTEBOARD_TITLE
+          value: My Board
     asserts:
       - contains:
           path: spec.template.spec.containers[0].env
           content:
-            name: ROUTEBOARD_NAMESPACE_ALLOWLIST
-            value: team-a,team-b
+            name: ROUTEBOARD_HEALTH_ENABLED
+            value: "false"
       - contains:
           path: spec.template.spec.containers[0].env
           content:
-            name: ROUTEBOARD_LABEL_SELECTOR
-            value: app=web
+            name: ROUTEBOARD_TITLE
+            value: My Board
 
   - it: renders priorityClassName and topologySpreadConstraints when set
     set:

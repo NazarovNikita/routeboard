@@ -98,18 +98,16 @@ config:
   watchIngress: true
   # -- Watch HTTPRoute resources. Also gates the httproutes RBAC rule.
   watchHTTPRoute: true
-  # -- Comma-separated namespaces to exclude from discovery.
-  namespaceDenylist: "kube-system,kube-public,kube-node-lease"
-  # -- Comma-separated namespaces to restrict discovery to (empty = all).
-  namespaceAllowlist: ""
-  # -- Label selector to filter discovered routes (empty = all).
-  labelSelector: ""
-  # -- Dashboard title.
-  title: "RouteBoard"
-  # -- Log level: debug, info, warn, or error.
-  logLevel: "info"
-  # -- Informer resync interval.
-  resyncInterval: "30m"
+
+# -- Extra environment variables for the RouteBoard container. Use this for any
+# `ROUTEBOARD_*` setting not covered by `config` above — including (but not limited to):
+# ROUTEBOARD_TITLE, ROUTEBOARD_LOG_LEVEL, ROUTEBOARD_RESYNC_INTERVAL,
+# ROUTEBOARD_NAMESPACE_DENYLIST, ROUTEBOARD_NAMESPACE_ALLOWLIST, ROUTEBOARD_LABEL_SELECTOR,
+# ROUTEBOARD_HEALTH_ENABLED, ROUTEBOARD_HEALTH_INTERVAL, ROUTEBOARD_HEALTH_TIMEOUT.
+# Do not repeat ROUTEBOARD_PORT / ROUTEBOARD_WATCH_INGRESS / ROUTEBOARD_WATCH_HTTPROUTE — those come from `config`.
+extraEnv: []
+#   - name: ROUTEBOARD_HEALTH_ENABLED
+#     value: "false"
 
 # -- Container resource requests and limits.
 resources:

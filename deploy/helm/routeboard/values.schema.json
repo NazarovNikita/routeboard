@@ -202,26 +202,20 @@
         },
         "watchHTTPRoute": {
           "type": "boolean"
-        },
-        "namespaceDenylist": {
-          "type": "string"
-        },
-        "namespaceAllowlist": {
-          "type": "string"
-        },
-        "labelSelector": {
-          "type": "string"
-        },
-        "title": {
-          "type": "string"
-        },
-        "logLevel": {
-          "type": "string",
-          "enum": ["debug", "info", "warn", "error"]
-        },
-        "resyncInterval": {
-          "type": "string"
         }
+      }
+    },
+    "extraEnv": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "properties": {
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": ["name"]
       }
     },
     "resources": {
