@@ -105,9 +105,10 @@ config:
 # ROUTEBOARD_NAMESPACE_DENYLIST, ROUTEBOARD_NAMESPACE_ALLOWLIST, ROUTEBOARD_LABEL_SELECTOR,
 # ROUTEBOARD_HEALTH_ENABLED, ROUTEBOARD_HEALTH_INTERVAL, ROUTEBOARD_HEALTH_TIMEOUT.
 # Do not repeat ROUTEBOARD_PORT / ROUTEBOARD_WATCH_INGRESS / ROUTEBOARD_WATCH_HTTPROUTE — those come from `config`.
+# Health checks are DISABLED by default; set ROUTEBOARD_HEALTH_ENABLED=true to enable them.
 extraEnv: []
 #   - name: ROUTEBOARD_HEALTH_ENABLED
-#     value: "false"
+#     value: "true"
 
 # -- Container resource requests and limits.
 resources:
