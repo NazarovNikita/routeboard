@@ -7,6 +7,7 @@ export function useRoutes() {
 	const [config, setConfig] = useState<Config>({
 		title: "RouteBoard",
 		namespaces: [],
+		healthEnabled: true,
 	});
 	const [loading, setLoading] = useState(true);
 	const [search, setSearch] = useState("");

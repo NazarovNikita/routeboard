@@ -33,4 +33,5 @@ export interface ChangeEvent {
 export interface Config {
 	title: string;
 	namespaces: string[];
+	healthEnabled: boolean;
 }
