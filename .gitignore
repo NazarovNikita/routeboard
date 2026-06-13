@@ -40,3 +40,8 @@ scripts/deploy-dev.sh
 
 # Helm local overrides
 values-local.yaml
+
+# Brainstorming visual companion
+.superpowers/
+docs/superpowers/
+.claude/
