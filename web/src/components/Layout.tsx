@@ -15,8 +15,8 @@ interface LayoutProps {
 	allRoutes: Route[];
 	search: string;
 	onSearchChange: (value: string) => void;
-	namespace: string;
-	onNamespaceChange: (value: string) => void;
+	selectedNamespaces: string[];
+	onNamespacesChange: (value: string[]) => void;
 	healthFilter: string;
 	onHealthFilterChange: (value: string) => void;
 	view: "grid" | "list";
@@ -36,8 +36,8 @@ export function Layout({
 	allRoutes,
 	search,
 	onSearchChange,
-	namespace,
-	onNamespaceChange,
+	selectedNamespaces,
+	onNamespacesChange,
 	healthFilter,
 	onHealthFilterChange,
 	view,
@@ -83,7 +83,7 @@ export function Layout({
 								<Command className="w-3 h-3" />
 								<span>K</span>
 							</button>
-							<NamespaceFilter namespaces={namespaces} value={namespace} onChange={onNamespaceChange} />
+							<NamespaceFilter namespaces={namespaces} selected={selectedNamespaces} onChange={onNamespacesChange} />
 							<HealthFilter value={healthFilter} onChange={onHealthFilterChange} routes={allRoutes} />
 							<ViewToggle view={view} onChange={onViewChange} />
 							<ThemeToggle dark={dark} onToggle={onToggleTheme} />

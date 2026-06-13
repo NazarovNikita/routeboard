@@ -11,7 +11,7 @@ export function useRoutes() {
 	});
 	const [loading, setLoading] = useState(true);
 	const [search, setSearch] = useState("");
-	const [namespace, setNamespace] = useState("");
+	const [selectedNamespaces, setSelectedNamespaces] = useState<string[]>([]);
 	const [healthFilter, setHealthFilter] = useState("");
 
 	const fetchRoutes = useCallback(async () => {
@@ -50,8 +50,8 @@ export function useRoutes() {
 	const filteredRoutes = useMemo(() => {
 		let routes = allRoutes.filter((r) => r.url);
 
-		if (namespace) {
-			routes = routes.filter((r) => r.namespace === namespace);
+		if (selectedNamespaces.length > 0) {
+			routes = routes.filter((r) => selectedNamespaces.includes(r.namespace));
 		}
 
 		if (healthFilter) {
@@ -71,7 +71,7 @@ export function useRoutes() {
 		}
 
 		return routes;
-	}, [allRoutes, namespace, healthFilter, search]);
+	}, [allRoutes, selectedNamespaces, healthFilter, search]);
 
 	const groupedRoutes = useMemo(() => {
 		const groups: Record<string, Route[]> = {};
@@ -100,8 +100,8 @@ export function useRoutes() {
 		connected,
 		search,
 		setSearch,
-		namespace,
-		setNamespace,
+		selectedNamespaces,
+		setSelectedNamespaces,
 		healthFilter,
 		setHealthFilter,
 	};

@@ -11,8 +11,20 @@ import { useRoutes } from "./hooks/useRoutes";
 import { useTheme } from "./hooks/useTheme";
 
 function App() {
-	const { routes, allRoutes, groupedRoutes, config, loading, connected, search, setSearch, namespace, setNamespace, healthFilter, setHealthFilter } =
-		useRoutes();
+	const {
+		routes,
+		allRoutes,
+		groupedRoutes,
+		config,
+		loading,
+		connected,
+		search,
+		setSearch,
+		selectedNamespaces,
+		setSelectedNamespaces,
+		healthFilter,
+		setHealthFilter,
+	} = useRoutes();
 
 	const { favorites, toggle, isFavorite } = useFavorites();
 	const { dark, toggle: toggleTheme } = useTheme();
@@ -46,7 +58,7 @@ function App() {
 	}, []);
 
 	const hasRoutes = Object.keys(groupedRoutes).length > 0;
-	const isSearching = search !== "" || namespace !== "" || healthFilter !== "";
+	const isSearching = search !== "" || selectedNamespaces.length > 0 || healthFilter !== "";
 
 	return (
 		<>
@@ -58,8 +70,8 @@ function App() {
 				allRoutes={allRoutes}
 				search={search}
 				onSearchChange={setSearch}
-				namespace={namespace}
-				onNamespaceChange={setNamespace}
+				selectedNamespaces={selectedNamespaces}
+				onNamespacesChange={setSelectedNamespaces}
 				healthFilter={healthFilter}
 				onHealthFilterChange={setHealthFilter}
 				view={view}
@@ -102,7 +114,7 @@ function App() {
 					onSelectRoute={handleSelectRoute}
 					onToggleTheme={toggleTheme}
 					onChangeView={setView}
-					onFilterNamespace={setNamespace}
+					onFilterNamespace={(ns) => setSelectedNamespaces(ns ? [ns] : [])}
 					onFilterHealth={setHealthFilter}
 					onClose={() => setCommandPaletteOpen(false)}
 				/>
