@@ -91,7 +91,7 @@ func TestAPIRoutesFilterSearch(t *testing.T) {
 }
 
 func TestAPIConfig(t *testing.T) {
-	h := NewHandlers(&config.Config{Title: "My Board"}, testStore())
+	h := NewHandlers(&config.Config{Title: "My Board", HealthEnabled: true}, testStore())
 
 	req := httptest.NewRequest("GET", "/api/config", nil)
 	w := httptest.NewRecorder()
@@ -106,6 +106,9 @@ func TestAPIConfig(t *testing.T) {
 	}
 	if len(resp.Namespaces) != 2 {
 		t.Errorf("got %d namespaces, want 2", len(resp.Namespaces))
+	}
+	if !resp.HealthEnabled {
+		t.Errorf("HealthEnabled = false, want true")
 	}
 }
 

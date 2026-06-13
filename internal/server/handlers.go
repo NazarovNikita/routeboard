@@ -19,8 +19,9 @@ func NewHandlers(cfg *config.Config, store *store.Store) *Handlers {
 }
 
 type configResponse struct {
-	Title      string   `json:"title"`
-	Namespaces []string `json:"namespaces"`
+	Title         string   `json:"title"`
+	Namespaces    []string `json:"namespaces"`
+	HealthEnabled bool     `json:"healthEnabled"`
 }
 
 func (h *Handlers) APIRoutes(w http.ResponseWriter, r *http.Request) {
@@ -56,8 +57,9 @@ func (h *Handlers) APIRoutes(w http.ResponseWriter, r *http.Request) {
 func (h *Handlers) APIConfig(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(configResponse{
-		Title:      h.cfg.Title,
-		Namespaces: h.store.Namespaces(),
+		Title:         h.cfg.Title,
+		Namespaces:    h.store.Namespaces(),
+		HealthEnabled: h.cfg.HealthEnabled,
 	})
 }
 
