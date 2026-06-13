@@ -10,7 +10,7 @@ import (
 	"github.com/dhia/routeboard/internal/model"
 )
 
-func extractHTTPRouteRoute(hr *gwv1.HTTPRoute) *model.Route {
+func extractHTTPRouteRoute(hr *gwv1.HTTPRoute, gatewayTLS bool) *model.Route {
 	r := &model.Route{
 		ID:          fmt.Sprintf("HTTPRoute:%s/%s", hr.Namespace, hr.Name),
 		Name:        hr.Name,
@@ -28,12 +28,26 @@ func extractHTTPRouteRoute(hr *gwv1.HTTPRoute) *model.Route {
 	}
 
 	for _, parent := range hr.Spec.ParentRefs {
+		// Fallback heuristic when the parent Gateway can't be read: a listener
+		// section named like "https"/"tls" implies TLS.
 		if parent.SectionName != nil {
 			sn := strings.ToLower(string(*parent.SectionName))
 			if strings.Contains(sn, "https") || strings.Contains(sn, "tls") {
 				r.TLS = true
 			}
 		}
+		// Record the first Gateway parent as "namespace/name".
+		if r.GatewayRef == "" && (parent.Kind == nil || *parent.Kind == "Gateway") {
+			ns := hr.Namespace
+			if parent.Namespace != nil {
+				ns = string(*parent.Namespace)
+			}
+			r.GatewayRef = ns + "/" + string(parent.Name)
+		}
+	}
+	// Authoritative TLS signal resolved from the parent Gateway's listeners.
+	if gatewayTLS {
+		r.TLS = true
 	}
 
 	for _, rule := range hr.Spec.Rules {

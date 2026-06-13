@@ -33,6 +33,12 @@ func extractIngressRoute(ingress *networkingv1.Ingress) *model.Route {
 		r.TLS = true
 	}
 
+	if ingress.Spec.IngressClassName != nil {
+		r.IngressClass = *ingress.Spec.IngressClassName
+	} else if c := ingress.Annotations["kubernetes.io/ingress.class"]; c != "" {
+		r.IngressClass = c
+	}
+
 	for _, rule := range ingress.Spec.Rules {
 		if rule.Host != "" {
 			r.Hosts = append(r.Hosts, rule.Host)

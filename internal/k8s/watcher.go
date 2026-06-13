@@ -8,6 +8,7 @@ import (
 	"time"
 
 	networkingv1 "k8s.io/api/networking/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/runtime"
 	"k8s.io/apimachinery/pkg/util/wait"
 	k8sinformers "k8s.io/client-go/informers"
@@ -217,9 +218,41 @@ func (w *Watcher) syncHTTPRoute(key string) error {
 		return fmt.Errorf("unexpected type for httproute %s", key)
 	}
 
-	route := extractHTTPRouteRoute(hr)
+	route := extractHTTPRouteRoute(hr, w.gatewayHasTLSListener(hr))
 	w.store.Set(route)
 	return nil
+}
+
+// gatewayHasTLSListener resolves whether any parent Gateway listener that this
+// HTTPRoute attaches to terminates TLS (protocol HTTPS/TLS or a tls block). It
+// reads the Gateway directly (no informer) — a lightweight lookup at sync time.
+func (w *Watcher) gatewayHasTLSListener(hr *gwv1.HTTPRoute) bool {
+	for _, parent := range hr.Spec.ParentRefs {
+		if parent.Kind != nil && *parent.Kind != "Gateway" {
+			continue
+		}
+		ns := hr.Namespace
+		if parent.Namespace != nil {
+			ns = string(*parent.Namespace)
+		}
+		gw, err := w.clients.GatewayAPI.GatewayV1().Gateways(ns).Get(context.Background(), string(parent.Name), metav1.GetOptions{})
+		if err != nil {
+			slog.Debug("could not read parent gateway for TLS resolution", "gateway", ns+"/"+string(parent.Name), "error", err)
+			continue
+		}
+		for _, l := range gw.Spec.Listeners {
+			if parent.SectionName != nil && string(*parent.SectionName) != string(l.Name) {
+				continue
+			}
+			if parent.Port != nil && *parent.Port != l.Port {
+				continue
+			}
+			if l.Protocol == gwv1.HTTPSProtocolType || l.Protocol == gwv1.TLSProtocolType || l.TLS != nil {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 func (w *Watcher) shouldInclude(namespace string) bool {

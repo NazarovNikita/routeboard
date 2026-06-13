@@ -18,8 +18,14 @@ tests:
             apiGroups: ["gateway.networking.k8s.io"]
             resources: ["httproutes"]
             verbs: ["get", "list", "watch"]
+      - contains:
+          path: rules
+          content:
+            apiGroups: ["gateway.networking.k8s.io"]
+            resources: ["gateways"]
+            verbs: ["get", "list"]
 
-  - it: drops the httproutes rule when watchHTTPRoute is false
+  - it: drops the httproutes and gateways rules when watchHTTPRoute is false
     set:
       config:
         watchHTTPRoute: false
@@ -30,6 +36,12 @@ tests:
             apiGroups: ["gateway.networking.k8s.io"]
             resources: ["httproutes"]
             verbs: ["get", "list", "watch"]
+      - notContains:
+          path: rules
+          content:
+            apiGroups: ["gateway.networking.k8s.io"]
+            resources: ["gateways"]
+            verbs: ["get", "list"]
 
   - it: drops the ingresses rule when watchIngress is false
     set:

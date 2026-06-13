@@ -20,6 +20,10 @@ type Route struct {
 	TLS         bool              `json:"tls"`
 	ServiceName string            `json:"serviceName,omitempty"`
 	ServicePort string            `json:"servicePort,omitempty"`
+	// GatewayRef is the parent Gateway ("namespace/name") for HTTPRoutes.
+	GatewayRef string `json:"gatewayRef,omitempty"`
+	// IngressClass is the IngressClassName (or legacy annotation) for Ingresses.
+	IngressClass string `json:"ingressClass,omitempty"`
 	Title       string            `json:"title"`
 	Description string            `json:"description"`
 	Icon        string            `json:"icon"`
