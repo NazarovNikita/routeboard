@@ -24,6 +24,8 @@ function App() {
 		setSelectedNamespaces,
 		healthFilter,
 		setHealthFilter,
+		sourceFilter,
+		setSourceFilter,
 	} = useRoutes();
 
 	const { favorites, toggle, isFavorite } = useFavorites();
@@ -58,7 +60,7 @@ function App() {
 	}, []);
 
 	const hasRoutes = Object.keys(groupedRoutes).length > 0;
-	const isSearching = search !== "" || selectedNamespaces.length > 0 || healthFilter !== "";
+	const isSearching = search !== "" || selectedNamespaces.length > 0 || healthFilter !== "" || sourceFilter !== "";
 
 	return (
 		<>
@@ -74,6 +76,9 @@ function App() {
 				onNamespacesChange={setSelectedNamespaces}
 				healthFilter={healthFilter}
 				onHealthFilterChange={setHealthFilter}
+				healthEnabled={config.healthEnabled}
+				sourceFilter={sourceFilter}
+				onSourceFilterChange={setSourceFilter}
 				view={view}
 				onViewChange={setView}
 				dark={dark}

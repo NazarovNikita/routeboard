@@ -4,6 +4,7 @@ import type { Route } from "../types";
 import { HealthFilter } from "./HealthFilter";
 import { NamespaceFilter } from "./NamespaceFilter";
 import { SearchBar } from "./SearchBar";
+import { SourceFilter } from "./SourceFilter";
 import { ThemeToggle } from "./ThemeToggle";
 import { ViewToggle } from "./ViewToggle";
 
@@ -19,6 +20,9 @@ interface LayoutProps {
 	onNamespacesChange: (value: string[]) => void;
 	healthFilter: string;
 	onHealthFilterChange: (value: string) => void;
+	healthEnabled: boolean;
+	sourceFilter: string;
+	onSourceFilterChange: (value: string) => void;
 	view: "grid" | "list";
 	onViewChange: (view: "grid" | "list") => void;
 	dark: boolean;
@@ -40,6 +44,9 @@ export function Layout({
 	onNamespacesChange,
 	healthFilter,
 	onHealthFilterChange,
+	healthEnabled,
+	sourceFilter,
+	onSourceFilterChange,
 	view,
 	onViewChange,
 	dark,
@@ -84,7 +91,11 @@ export function Layout({
 								<span>K</span>
 							</button>
 							<NamespaceFilter namespaces={namespaces} selected={selectedNamespaces} onChange={onNamespacesChange} />
-							<HealthFilter value={healthFilter} onChange={onHealthFilterChange} routes={allRoutes} />
+							{healthEnabled ? (
+								<HealthFilter value={healthFilter} onChange={onHealthFilterChange} routes={allRoutes} />
+							) : (
+								<SourceFilter value={sourceFilter} onChange={onSourceFilterChange} routes={allRoutes} />
+							)}
 							<ViewToggle view={view} onChange={onViewChange} />
 							<ThemeToggle dark={dark} onToggle={onToggleTheme} />
 						</div>

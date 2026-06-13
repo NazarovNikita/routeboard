@@ -13,6 +13,7 @@ export function useRoutes() {
 	const [search, setSearch] = useState("");
 	const [selectedNamespaces, setSelectedNamespaces] = useState<string[]>([]);
 	const [healthFilter, setHealthFilter] = useState("");
+	const [sourceFilter, setSourceFilter] = useState("");
 
 	const fetchRoutes = useCallback(async () => {
 		try {
@@ -58,6 +59,10 @@ export function useRoutes() {
 			routes = routes.filter((r) => r.health === healthFilter);
 		}
 
+		if (sourceFilter) {
+			routes = routes.filter((r) => r.source === sourceFilter);
+		}
+
 		if (search) {
 			const q = search.toLowerCase();
 			routes = routes.filter(
@@ -71,7 +76,7 @@ export function useRoutes() {
 		}
 
 		return routes;
-	}, [allRoutes, selectedNamespaces, healthFilter, search]);
+	}, [allRoutes, selectedNamespaces, healthFilter, sourceFilter, search]);
 
 	const groupedRoutes = useMemo(() => {
 		const groups: Record<string, Route[]> = {};
@@ -104,5 +109,7 @@ export function useRoutes() {
 		setSelectedNamespaces,
 		healthFilter,
 		setHealthFilter,
+		sourceFilter,
+		setSourceFilter,
 	};
 }
