@@ -98,6 +98,7 @@ function App() {
 						favorites={favorites}
 						onSelectRoute={handleSelectRoute}
 						focusedRouteId={focusedRouteId}
+						healthEnabled={config.healthEnabled}
 					/>
 				) : (
 					<EmptyState searching={isSearching} />

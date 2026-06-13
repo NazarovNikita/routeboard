@@ -11,6 +11,7 @@ interface RouteGridProps {
 	favorites: Set<string>;
 	onSelectRoute?: (id: string) => void;
 	focusedRouteId?: string | null;
+	healthEnabled: boolean;
 }
 
 export function RouteGrid({
@@ -22,6 +23,7 @@ export function RouteGrid({
 	favorites,
 	onSelectRoute,
 	focusedRouteId,
+	healthEnabled,
 }: RouteGridProps) {
 	const groups = Object.entries(groupedRoutes);
 	let globalIndex = 0;
@@ -53,6 +55,7 @@ export function RouteGrid({
 									onToggleFavorite={onToggleFavorite}
 									onSelect={onSelectRoute}
 									isFocused={focusedRouteId === route.id}
+									healthEnabled={healthEnabled}
 								/>
 							);
 						})}
@@ -82,6 +85,7 @@ export function RouteGrid({
 									onToggleFavorite={onToggleFavorite}
 									onSelect={onSelectRoute}
 									isFocused={focusedRouteId === route.id}
+									healthEnabled={healthEnabled}
 								/>
 							);
 						})}

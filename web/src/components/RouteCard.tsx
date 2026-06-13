@@ -13,9 +13,10 @@ interface RouteCardProps {
 	onToggleFavorite: (id: string) => void;
 	onSelect?: (id: string) => void;
 	isFocused?: boolean;
+	healthEnabled?: boolean;
 }
 
-export function RouteCard({ route, index, view, isFavorite, onToggleFavorite, onSelect, isFocused }: RouteCardProps) {
+export function RouteCard({ route, index, view, isFavorite, onToggleFavorite, onSelect, isFocused, healthEnabled = true }: RouteCardProps) {
 	const [copied, setCopied] = useState(false);
 	const cardRef = React.useRef<HTMLButtonElement>(null);
 
@@ -70,9 +71,9 @@ export function RouteCard({ route, index, view, isFavorite, onToggleFavorite, on
 					<div className="flex items-center gap-2">
 						<span className="font-medium text-tx1 truncate text-sm">{route.title}</span>
 						{route.tls && <Lock className="w-3 h-3 text-success flex-shrink-0" />}
-						<HealthDot health={route.health} checkedAt={route.healthCheckedAt} />
-						{route.healthHistory && <Sparkline history={route.healthHistory} />}
-						<ResponseTimeBadge ms={route.responseTimeMs} />
+						{healthEnabled && <HealthDot health={route.health} checkedAt={route.healthCheckedAt} />}
+						{healthEnabled && route.healthHistory && <Sparkline history={route.healthHistory} />}
+						{healthEnabled && <ResponseTimeBadge ms={route.responseTimeMs} />}
 					</div>
 					{route.description && <p className="text-xs text-tx3 truncate mt-0.5">{route.description}</p>}
 				</div>
@@ -133,8 +134,8 @@ export function RouteCard({ route, index, view, isFavorite, onToggleFavorite, on
 						<div className="flex items-center gap-2">
 							<h3 className="font-display font-semibold text-tx1 truncate text-[15px] leading-tight">{route.title}</h3>
 							{route.tls && <Lock className="w-3.5 h-3.5 text-success flex-shrink-0" />}
-							<HealthDot health={route.health} checkedAt={route.healthCheckedAt} size="md" />
-							<ResponseTimeBadge ms={route.responseTimeMs} />
+							{healthEnabled && <HealthDot health={route.health} checkedAt={route.healthCheckedAt} size="md" />}
+							{healthEnabled && <ResponseTimeBadge ms={route.responseTimeMs} />}
 						</div>
 						{route.description && <p className="text-xs text-tx2 mt-1 line-clamp-2 leading-relaxed">{route.description}</p>}
 					</div>
@@ -148,17 +149,42 @@ export function RouteCard({ route, index, view, isFavorite, onToggleFavorite, on
 							<span className="font-mono text-xs text-tx3 truncate group-hover:text-accent transition-colors">{truncatedUrl}</span>
 						</div>
 					)}
-					{route.healthHistory && route.healthHistory.length > 1 && <Sparkline history={route.healthHistory} />}
+					{healthEnabled && route.healthHistory && route.healthHistory.length > 1 && <Sparkline history={route.healthHistory} />}
 				</div>
 
-				{/* Badges */}
-				<div className="flex items-center gap-1.5 flex-wrap">
+				{/* Badges + actions */}
+				<div className="flex items-center gap-1.5">
 					<SourceBadge source={route.source} />
-					<span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-elevated text-tx3 border border-line">{route.namespace}</span>
+					<span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-elevated text-tx3 border border-line min-w-0 truncate max-w-[140px]">
+						{route.namespace}
+					</span>
+					<div className="flex-1" />
+					<div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
+						<button
+							type="button"
+							onClick={handleCopy}
+							className="p-1.5 rounded-md bg-elevated/80 backdrop-blur-sm border border-line text-tx3 hover:text-accent hover:border-accent/30 transition-colors"
+							title="Copy URL"
+						>
+							{copied ? <Check className="w-3.5 h-3.5 text-success" /> : <Copy className="w-3.5 h-3.5" />}
+						</button>
+						{route.url && (
+							<a
+								href={route.url}
+								target="_blank"
+								rel="noopener noreferrer"
+								onClick={(e) => e.stopPropagation()}
+								className="p-1.5 rounded-md bg-elevated/80 backdrop-blur-sm border border-line text-tx3 hover:text-accent hover:border-accent/30 transition-colors"
+								title="Open URL"
+							>
+								<ArrowUpRight className="w-3.5 h-3.5" />
+							</a>
+						)}
+					</div>
 				</div>
 			</div>
 
-			{/* Star + Copy + arrow on hover */}
+			{/* Star on hover (top-right) */}
 			<div className="absolute top-4 right-4 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
 				<button
 					type="button"
@@ -168,26 +194,6 @@ export function RouteCard({ route, index, view, isFavorite, onToggleFavorite, on
 				>
 					<Star className="w-3.5 h-3.5" fill={isFavorite ? "currentColor" : "none"} />
 				</button>
-				<button
-					type="button"
-					onClick={handleCopy}
-					className="p-1.5 rounded-md bg-elevated/80 backdrop-blur-sm border border-line text-tx3 hover:text-accent hover:border-accent/30 transition-colors"
-					title="Copy URL"
-				>
-					{copied ? <Check className="w-3.5 h-3.5 text-success" /> : <Copy className="w-3.5 h-3.5" />}
-				</button>
-				{route.url && (
-					<a
-						href={route.url}
-						target="_blank"
-						rel="noopener noreferrer"
-						onClick={(e) => e.stopPropagation()}
-						className="p-1.5 rounded-md bg-elevated/80 backdrop-blur-sm border border-line text-tx3 hover:text-accent hover:border-accent/30 transition-colors"
-						title="Open URL"
-					>
-						<ArrowUpRight className="w-3.5 h-3.5" />
-					</a>
-				)}
 			</div>
 		</button>
 	);
